@@ -170,7 +170,8 @@ proc main() =
   loop()
 
 
+when isMainModule:
+ main()
 
-main()
   
 
