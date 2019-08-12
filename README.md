@@ -1,6 +1,6 @@
 # cal
-a simple interactive calculator
-use Stack
-support `+` `-` `*` `/`
-support float and negative number
-support command `exit` and `history` 
+a simple interactive calculator \n
+use Stack \n
+support `+` `-` `*` `/` \n
+support float and negative number \n
+support command `exit` and `history` \n
