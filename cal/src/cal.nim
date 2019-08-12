@@ -102,7 +102,7 @@ proc evaluate(symbol: string, num1: float, num2: float): float =
     try:
       return num1 / num2
     except DivByZeroError:
-      stdout.write("除数不可以为零")
+      stdout.write("divide by zero")
   # elif symbol == "^":
   #   return num1 ** num2
   # elif symbol == "%":
