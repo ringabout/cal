@@ -1,11 +1,9 @@
-import os, osproc
-import parseutils
 import sets
 import strformat
 import strutils
 import tables
 
-import cal/utils
+import calpkg/utils
 
 
 let symbols = ["^", "%", "+", "-", "*", "/", "(", ")"].toHashSet
@@ -17,10 +15,9 @@ let reserved_set = ["exit", "history"].toHashSet
 #   SymbolError = ref object of Exception
 #   ExitError = ref object of Exception
 
-# 微信公众号：Nim编程
+
 proc welcome() =
   stdout.write("Welcome to cal v0.1\nauthor:flywind\n\n")
-
 
 proc read(prompt: string = "cal> "): string = 
   stdout.write(fmt"{prompt}")
@@ -28,14 +25,14 @@ proc read(prompt: string = "cal> "): string =
   result = stdin.readLine()
 
 iterator token(expressions: string): string = 
-  var sentences: string = expressions
+  var sentences = expressions
   for symbol in symbols:
     sentences = sentences.replace(symbol, fmt" {symbol} ") 
   var temp: seq[string]
   for sentence in sentences.split:
     if sentence != "":
       temp.add(sentence)
-  var target: seq[string] = temp
+  var target = temp
   for (i, item) in temp.pairs:
     if item == "-": 
       if (i-1) < 0 or temp[i-1] == "(": 
@@ -44,20 +41,17 @@ iterator token(expressions: string): string =
     if target[i] != "":
       yield target[i]
 
-    
-
 proc comparePriority(first: string, second: string): bool = 
   let f_priority: int = priority[first]
   let s_priority: int = priority[second]
   return f_priority <= s_priority
 
-proc isFloat(num: string): bool = 
+proc isFloat(num: string): bool =
+  result = true
   try:
     discard parseFloat(num)
-    return true
   except ValueError:
-    return false
-
+    result = false
 
 proc parseInfix(expressions: string): seq[string] = 
   var s: Stack[string] = Stack[string](container: @[])
@@ -90,7 +84,6 @@ proc parseInfix(expressions: string): seq[string] =
     target.add(s.pop)
   result = target
 
-
 proc evaluate(symbol: string, num1: float, num2: float): float =
   if symbol == "+":
     return num1 + num2
@@ -108,28 +101,26 @@ proc evaluate(symbol: string, num1: float, num2: float): float =
   # elif symbol == "%":
   #   return num1 %% num2
 
-
 proc parseSufix(expressions: seq[string]): float =
-  var target: float
-  var s: Stack[string] = Stack[string](container: @[])
+  var 
+    target: float
+    s = Stack[string](container: @[])
   for expression in expressions:
     if isFloat(expression):
       s.push(expression)
     else:
-      var elem2 = parseFloat(s.pop)
-      var elem1 = parseFloat(s.pop)
+      var 
+        elem2 = parseFloat(s.pop)
+        elem1 = parseFloat(s.pop)
       target = evaluate(expression, elem1, elem2)
       s.push(fmt"{target}")
   if s.len > 0:
     target = parseFloat(s.pop)
   result = target 
 
-
 proc parse(sentence: string): float = 
-  let expr_infix: seq[string] = parseInfix(sentence)
-  let value: float = parseSufix(expr_infix)
-  return value
-
+  let expr_infix = parseInfix(sentence)
+  result = parseSufix(expr_infix)
 
 proc reversed_op(operator: string, history: CycleArray[string]): bool = 
   result = true
@@ -151,7 +142,7 @@ proc loop() =
     if target in reserved_set:
       running = reversed_op(target, history)
       continue
-   
+
     try:
       var eval_value: float = parse(target)   
       stdout.write(fmt"{eval_value}")
@@ -165,13 +156,9 @@ proc loop() =
       stdout.write("rewrite\n")
   stdout.write("see you later!")
 
-
 proc main() = 
   loop()
 
 
 when isMainModule:
  main()
-
-  
-
